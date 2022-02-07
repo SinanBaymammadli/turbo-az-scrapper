@@ -1,5 +1,6 @@
 import "dotenv/config";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda";
 import fetch from "node-fetch";
 
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN;
@@ -11,7 +12,12 @@ const turboAzUrl =
 let lastLinks = [];
 
 export async function scrape() {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    executablePath: await chromium.executablePath,
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    headless: chromium.headless,
+  });
   const page = await browser.newPage();
 
   await page.goto(turboAzUrl);
